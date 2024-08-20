@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
             lowercase: true,
             trim: true,
         },
-        fullname: {
+        fullName: {
             type: String,
             required: true,
             trim: true,
@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema(
             type: String, //cloudinary urls
             required: true,
         },
-        coverimage: {
+        coverImage: {
             type: String, //cloudinary urls
         },
         watchHistory: [
