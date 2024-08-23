@@ -91,7 +91,7 @@ const registerUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, createdUser, "User created successfully"));
 });
 
-const loginUser = asyncHandler(async (req, res) => {
+export const loginUser = asyncHandler(async (req, res) => {
     // get data from req body
     // get user details from frontend
     // check the user exists or not
@@ -146,5 +146,9 @@ const loginUser = asyncHandler(async (req, res) => {
         );
 });
 
+export const logoutUser = asyncHandler(async (req, res) => {
+    
+});
+
 export default registerUser;
-export const login = loginUser;
+// export const login = loginUser;
