@@ -4,6 +4,8 @@ import { User } from "../models/user.model.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 import ApiResponse from "../utils/apiResponse.js";
 
+
+
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
         const user = await User.findById(userId);
@@ -15,7 +17,10 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
         return { accessToken, refreshToken };
     } catch (error) {
-        throw new ApiError(500, "Something went wrong while generating tokens");
+        throw new ApiError(
+            500,
+            error.message || "Something went wrong while generating tokens"
+        );
     }
 };
 
@@ -91,16 +96,19 @@ const registerUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, createdUser, "User created successfully!"));
 });
 
-export const loginUser = asyncHandler(async (req, res) => {
+const loginUser = asyncHandler(async (req, res) => {
     // get data from req body
     // get user details from frontend
     // check the user exists or not
     // check username and password is correct or not
     // generate access token and refresh token
 
-    const { email, username, password } = req.body;
+    console.log("req.body: ", req.body);
 
-    if (!username || !email) {
+    const { email, username, password } = req.body;
+    console.log("email: ", email, "username: ", username);
+
+    if (!(username || email)) {
         throw new ApiError(400, "Username and email are required");
     }
 
@@ -172,3 +180,4 @@ export const logoutUser = asyncHandler(async (req, res) => {
 
 export default registerUser;
 // export const login = loginUser;
+export { loginUser };
