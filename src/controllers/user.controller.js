@@ -153,10 +153,10 @@ const loginUser = asyncHandler(async (req, res) => {
         );
 });
 
-export const logoutUser = asyncHandler(async (req, res) => {
+const logoutUser = asyncHandler(async (req, res) => {
     // User.findById(req.user._id).updateOne({ refreshToken: null });
     await User.findByIdAndUpdate(
-        req.user.id,
+        req.user._id,
         {
             $set: { refreshToken: undefined },
         },
@@ -213,7 +213,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             .status(200)
             .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", newRefreshToken, options)
-            .json( 
+            .json(
                 new ApiResponse(
                     200,
                     {
@@ -228,5 +228,70 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 });
 
+// change current password
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    const user = await User.findById(req.user?._id);
+
+    const isPasswordCorrect = await user.isPasswordCorrect(currentPassword);
+
+    if (!isPasswordCorrect) {
+        throw new ApiError(401, "Current Password is incorrect");
+    }
+
+    if (newPassword !== confirmPassword) {
+        throw new ApiError(
+            401,
+            "New password and confirm password does not match"
+        );
+    }
+
+    user.password = newPassword;
+    // save to execute edit and save function in model
+    await user.save({ validateBeforeSave: false });
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Password changed successfully"));
+});
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user?._id);
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user, "User fetched successfully"));
+});
+
+const updateAccountDetails = asyncHandler(async (req, res) => {
+    const { fullName, email } = req.body;
+
+    if (!(fullName || email)) {
+        throw new ApiError(400, "Please provide at least one field to update");
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: { fullName, email },
+        },
+        { new: true }
+    ).select("-password");
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, user, "Account details updated successfully")
+        );
+});
+
 export default registerUser;
-export { loginUser, refreshAccessToken };
+export {
+    loginUser,
+    logoutUser,
+    refreshAccessToken,
+    changeCurrentPassword,
+    getCurrentUser,
+    updateAccountDetails,
+};
