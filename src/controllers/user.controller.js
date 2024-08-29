@@ -286,6 +286,54 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         );
 });
 
+const updateAvatar = asyncHandler(async (req, res) => {
+    const avatarLocalPath = req.file?.path;
+
+    if (!avatarLocalPath) {
+        throw new ApiError(400, "Please provide an avatar");
+    }
+
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+    if (!avatar.url) {
+        throw new ApiError(500, "Failed to upload avatar");
+    }
+
+    await User.findByIdAndUpdate(
+        req.user?._id,
+        { $set: { avatar: avatar.url } },
+        { new: true }
+    ).select("-password");
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, avatar, "Avatar updated successfully"));
+});
+
+const updateCover = asyncHandler(async (req, res) => {
+    const coverLocalPath = req.file?.path;
+
+    if (!coverLocalPath) {
+        throw new ApiError(400, "Please provide an avatar");
+    }
+
+    const cover = await uploadOnCloudinary(coverLocalPath);
+
+    if (!cover.url) {
+        throw new ApiError(500, "Failed to upload avatar");
+    }
+
+    await User.findByIdAndUpdate(
+        req.user?._id,
+        { $set: { coverImage: cover.url } },
+        { new: true }
+    ).select("-password");
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, cover, "Cover Image updated successfully"));
+});
+
 export default registerUser;
 export {
     loginUser,
@@ -294,4 +342,6 @@ export {
     changeCurrentPassword,
     getCurrentUser,
     updateAccountDetails,
+    updateAvatar,
+    updateCover,
 };
