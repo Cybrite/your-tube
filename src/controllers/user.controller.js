@@ -314,13 +314,13 @@ const updateCover = asyncHandler(async (req, res) => {
     const coverLocalPath = req.file?.path;
 
     if (!coverLocalPath) {
-        throw new ApiError(400, "Please provide an avatar");
+        throw new ApiError(400, "Please provide an cover image");
     }
 
     const cover = await uploadOnCloudinary(coverLocalPath);
 
     if (!cover.url) {
-        throw new ApiError(500, "Failed to upload avatar");
+        throw new ApiError(500, "Failed to upload cover image");
     }
 
     await User.findByIdAndUpdate(
