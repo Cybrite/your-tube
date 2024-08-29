@@ -299,7 +299,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Failed to upload avatar");
     }
 
-    await User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user?._id,
         { $set: { avatar: avatar.url } },
         { new: true }
@@ -307,7 +307,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .json(new ApiResponse(200, avatar, "Avatar updated successfully"));
+        .json(new ApiResponse(200, user, "Avatar updated successfully"));
 });
 
 const updateCover = asyncHandler(async (req, res) => {
@@ -323,7 +323,7 @@ const updateCover = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Failed to upload cover image");
     }
 
-    await User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user?._id,
         { $set: { coverImage: cover.url } },
         { new: true }
@@ -331,7 +331,7 @@ const updateCover = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .json(new ApiResponse(200, cover, "Cover Image updated successfully"));
+        .json(new ApiResponse(200, user, "Cover Image updated successfully"));
 });
 
 export default registerUser;
