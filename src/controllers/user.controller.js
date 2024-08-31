@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 import ApiResponse from "../utils/apiResponse.js";
 import jwt from "jsonwebtoken";
+import deleteAfterChange from "../utils/deleteAfterChange.js";
 
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
@@ -287,21 +288,25 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 });
 
 const updateAvatar = asyncHandler(async (req, res) => {
+    const { avatar } = req.body;
+
+    await deleteAfterChange(avatar);
+
     const avatarLocalPath = req.file?.path;
 
     if (!avatarLocalPath) {
         throw new ApiError(400, "Please provide an avatar");
     }
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    const Newavatar = await uploadOnCloudinary(avatarLocalPath);
 
-    if (!avatar.url) {
+    if (!Newavatar.url) {
         throw new ApiError(500, "Failed to upload avatar");
     }
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
-        { $set: { avatar: avatar.url } },
+        { $set: { avatar: Newavatar.url } },
         { new: true }
     ).select("-password");
 
@@ -311,6 +316,10 @@ const updateAvatar = asyncHandler(async (req, res) => {
 });
 
 const updateCover = asyncHandler(async (req, res) => {
+    const { coverImage } = req.body;
+
+    await deleteAfterChange(coverImage);
+
     const coverLocalPath = req.file?.path;
 
     if (!coverLocalPath) {
