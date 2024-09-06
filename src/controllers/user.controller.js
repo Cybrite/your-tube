@@ -298,15 +298,15 @@ const updateAvatar = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Please provide an avatar");
     }
 
-    const Newavatar = await uploadOnCloudinary(avatarLocalPath);
+    const newAvatar = await uploadOnCloudinary(avatarLocalPath);
 
-    if (!Newavatar.url) {
+    if (!newAvatar.url) {
         throw new ApiError(500, "Failed to upload avatar");
     }
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
-        { $set: { avatar: Newavatar.url } },
+        { $set: { avatar: newAvatar.url } },
         { new: true }
     ).select("-password");
 
