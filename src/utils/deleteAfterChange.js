@@ -8,17 +8,22 @@ cloudinary.config({
     api_secret: process.env.API_SECRET,
 });
 
-const deleteAfterChange = async (localFilePath) => {
+const deleteAfterChange = async (publicID) => {
     try {
-        if (!localFilePath) return null;
+        if (!publicID) return null;
 
-        const response = await cloudinary.uploader.destroy(localFilePath, {
+        const response = await cloudinary.uploader.destroy(publicID, {
             resource_type: "auto",
         });
 
+        if (response.result === "not found") {
+            console.log("file not found or already deleted");
+            return null;
+        }
         return response;
     } catch (error) {
-        console.log(error);
+        console.log("Error deleting image from cloudinary", error);
+        throw error;
     }
 };
 

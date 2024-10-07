@@ -319,7 +319,8 @@ const updateAvatar = asyncHandler(async (req, res) => {
 });
 
 const updateCover = asyncHandler(async (req, res) => {
-    const { coverImage } = req.body;
+    const user1 = await User.findById(req.user?._id);
+    const { coverImage } = user1;
 
     await deleteAfterChange(coverImage);
 
