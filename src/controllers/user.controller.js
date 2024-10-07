@@ -288,8 +288,10 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         );
 });
 
+// avatar and cover
 const updateAvatar = asyncHandler(async (req, res) => {
-    const { avatar } = req.body;
+    const user1 = await User.findById(req.user?._id);
+    const { avatar } = user1;
 
     await deleteAfterChange(avatar);
 
